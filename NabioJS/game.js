@@ -174,3 +174,86 @@ snake = {
     }
 
 };
+
+
+
+food = {
+
+    size: null,
+    x: null,
+    y: null,
+    color: '#0FF',
+
+    set: function () {
+        food.size = snake.size;
+        food.x = (Math.ceil(Math.random() * 10) * snake.size * 4) - snake.size / 2;
+        food.y = (Math.ceil(Math.random() * 10) * snake.size * 3) - snake.size / 2;
+    },
+
+    draw: function () {
+        game.drawBox(food.x, food.y, food.size, food.color);
+    }
+
+};
+
+
+
+//hope
+
+
+inverseDirection = {
+    'up': 'down',
+    'left': 'right',
+    'right': 'left',
+    'down': 'up'
+};
+
+keys = {
+    up: [38, 75, 87],
+    down: [40, 74, 83],
+    left: [37, 65, 72],
+    right: [39, 68, 76],
+    start_game: [13, 32]
+};
+
+Object.prototype.getKey = function (value) {
+    for (var key in this) {
+        if (this[key] instanceof Array && this[key].indexOf(value) >= 0) {
+            return key;
+        }
+    }
+    return null;
+};
+
+
+
+addEventListener("keydown", function (e) {
+    lastKey = keys.getKey(e.keyCode);
+    if (['up', 'down', 'left', 'right'].indexOf(lastKey) >= 0
+        && lastKey != inverseDirection[snake.direction]) {
+        snake.direction = lastKey;
+    } else if (['start_game'].indexOf(lastKey) >= 0 && game.over) {
+        game.start();
+    }
+}, false);
+
+var requestAnimationFrame = window.requestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame;
+
+
+function loop() {
+    if (game.over == false) {
+        game.resetCanvas();
+        game.drawScore();
+        snake.move();
+        food.draw();
+        snake.draw();
+        game.drawMessage();
+    }
+    setTimeout(function () {
+        requestAnimationFrame(loop);
+    }, 1000 / game.fps);
+};
+
+requestAnimationFrame(loop);
